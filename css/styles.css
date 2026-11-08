@@ -1,0 +1,625 @@
+/* =====================================================================
+   HBCU Surge - styles.css (complete file)
+   1 Basics   2 Header   3 Controls   4 Layout   5 Day groups
+   6 Game cards   7 Sidebar   8 Footer   9 Teams page   10 Team page
+   11 Player pop-up   12 Phones
+   ===================================================================== */
+
+/* ---------- 1. BASICS ---------- */
+:root {
+  --bg: #f2f2f2;
+  --card: #ffffff;
+  --dark: #121212;
+  --accent: #cc0000;
+  --muted: #666666;
+  --line: #e6e6e6;
+  --live: #d32f2f;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Anything marked "hidden" must really disappear */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: #111;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+h2 {
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.status-line {
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+/* ---------- 2. HEADER ---------- */
+.site-header {
+  background: var(--dark);
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.brand {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+}
+
+.brand span {
+  color: var(--accent);
+}
+
+.view-tabs {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.view-btn {
+  background: #2a2a2a;
+  color: #dddddd;
+  border: none;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.view-btn.active {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #cccccc;
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.tab.active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+}
+
+/* ---------- 3. CONTROLS (Scores page) ---------- */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 2rem 0;
+}
+
+.conf-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chip {
+  background: #dddddd;
+  border: none;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.chip.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.week-label {
+  min-width: 190px;
+  text-align: center;
+  font-weight: 800;
+}
+
+.nav-btn {
+  background: var(--dark);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.nav-btn-alt {
+  background: #fff;
+  color: var(--dark);
+  border: 1px solid #bbb;
+}
+
+/* ---------- 4. LAYOUT (Scores page) ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  padding: 1rem 2rem 2rem;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.empty {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 1.5rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ---------- 5. DAY GROUPS ---------- */
+.day {
+  margin-bottom: 1.5rem;
+}
+
+.day-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.8rem;
+  border-bottom: 2px solid var(--dark);
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.day-title.today {
+  border-bottom-color: var(--accent);
+}
+
+.today-tag {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 0.65rem;
+}
+
+.day-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.cards {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* ---------- 6. GAME CARDS ---------- */
+.game {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.game-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.badge {
+  background: #eeeeee;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.badge.live {
+  background: var(--live);
+  color: #fff;
+}
+
+.badge.final {
+  background: var(--dark);
+  color: #fff;
+}
+
+.tag {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.team-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  font-size: 1.05rem;
+}
+
+.team-row.winner {
+  font-weight: 800;
+}
+
+.team-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-conf {
+  color: var(--accent);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.team-record {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+
+.score {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+/* ---------- 7. SIDEBAR ---------- */
+.summary {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.summary-row:last-child {
+  border-bottom: none;
+}
+
+.summary-row strong {
+  font-size: 1.1rem;
+}
+
+/* ---------- 8. FOOTER ---------- */
+.site-footer {
+  padding: 1.5rem 2rem 2rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+/* ---------- 9. TEAMS PAGE ---------- */
+.teams-view {
+  padding: 1rem 2rem 2rem;
+}
+
+.subtabs {
+  display: flex;
+  gap: 0.3rem;
+  margin: 0.8rem 0 1rem;
+  border-bottom: 2px solid var(--line);
+}
+
+.subtab {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  padding: 0.6rem 1.1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.subtab:hover {
+  color: #111111;
+}
+
+.subtab.active {
+  color: #111111;
+  border-bottom-color: var(--accent);
+}
+
+.teams-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.team-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  background: var(--card);
+  border: none;
+  border-left: 6px solid var(--dark);
+  border-radius: 8px;
+  padding: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.team-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
+}
+
+.team-card-conf {
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- 10. TEAM PAGE (schedule + roster tables) ---------- */
+.team-head {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+
+.team-head h2 {
+  margin-bottom: 0;
+  font-size: 1.4rem;
+}
+
+.team-conf-tag {
+  background: var(--accent);
+  color: #ffffff;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+table {
+  width: 100%;
+  background: var(--card);
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th,
+td {
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #eeeeee;
+}
+
+th {
+  background: var(--dark);
+  color: white;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.result {
+  display: inline-block;
+  min-width: 1.4rem;
+  margin-right: 0.3rem;
+  font-weight: 800;
+}
+
+.result.win {
+  color: #1b7f3b;
+}
+
+.result.loss,
+.result.live {
+  color: var(--live);
+}
+
+.schedule-table tr.next-game td {
+  background: #fff4f4;
+  font-weight: 700;
+}
+
+.roster-tools {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0.8rem 0;
+}
+
+.roster-tools .status-line {
+  margin-bottom: 0;
+}
+
+.search-box {
+  padding: 0.5rem 0.8rem;
+  border: 1px solid #bbbbbb;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  min-width: 220px;
+}
+
+.player-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--accent);
+  font-size: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+
+.player-link:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 11. PLAYER POP-UP ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 1.5rem;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.8rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.player-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.player-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--dark);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.bio-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.bio-grid dt {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bio-grid dd {
+  font-weight: 700;
+}
+
+.stats-table th,
+.stats-table td {
+  white-space: nowrap;
+  text-align: center;
+}
+
+.stats-table tbody th {
+  background: #f5f5f5;
+  color: #111111;
+  text-align: left;
+  text-transform: none;
+}
+
+/* ---------- 12. PHONES ---------- */
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .site-header,
+  .controls,
+  .layout,
+  .teams-view {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}

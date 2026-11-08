@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HBCU Surge | SWAC &amp; MEAC</title>
+
+<style>
+/* =====================================================================
+   HBCU Surge - styles
+   ===================================================================== */
+:root {
+  --bg: #f2f2f2;
+  --card: #ffffff;
+  --dark: #121212;
+  --accent: #cc0000;
+  --muted: #666666;
+  --line: #e6e6e6;
+  --live: #d32f2f;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+[hidden] { display: none !important; }
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: #111;
+}
+
+button { font-family: inherit; cursor: pointer; }
+
+h2 { margin-bottom: 0.8rem; font-size: 1.1rem; text-transform: uppercase; }
+h4 { margin: 1.2rem 0 0.5rem; font-size: 0.95rem; }
+.muted { color: var(--muted); font-size: 0.9rem; }
+.status-line { margin-bottom: 0.8rem; color: var(--muted); font-size: 0.85rem; }
+.table-wrap { overflow-x: auto; }
+
+/* ----- Header ----- */
+.site-header {
+  background: var(--dark); color: #fff; padding: 1rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem;
+}
+.brand { font-size: 1.5rem; text-transform: uppercase; }
+.brand span { color: var(--accent); }
+.view-tabs { display: flex; gap: 0.4rem; }
+.view-btn {
+  background: #2a2a2a; color: #ddd; border: none; border-radius: 999px;
+  padding: 0.4rem 1rem; font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+}
+.view-btn.active { background: var(--accent); color: #fff; }
+.tab {
+  background: transparent; border: none; border-bottom: 3px solid transparent;
+  color: #ccc; padding: 0.6rem 1rem; font-weight: 700; text-transform: uppercase;
+}
+.tab.active { color: #fff; border-bottom-color: var(--accent); }
+
+/* ----- Scores controls ----- */
+.controls {
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 1rem; padding: 1rem 2rem 0;
+}
+.conf-filters { display: flex; gap: 0.5rem; }
+.chip {
+  background: #ddd; border: none; border-radius: 999px; padding: 0.4rem 0.9rem;
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+}
+.chip.active { background: var(--accent); color: #fff; }
+.week-nav { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.week-label { min-width: 190px; text-align: center; font-weight: 800; }
+.nav-btn {
+  background: var(--dark); color: #fff; border: none; border-radius: 6px;
+  padding: 0.45rem 0.8rem; font-size: 0.8rem; font-weight: 700;
+}
+.nav-btn-alt { background: #fff; color: var(--dark); border: 1px solid #bbb; }
+
+/* ----- Scores layout ----- */
+.layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; padding: 1rem 2rem 2rem; }
+.status-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 1rem; margin-bottom: 0.4rem; font-size: 0.8rem; color: var(--muted);
+}
+.hint { margin-bottom: 1rem; color: var(--muted); font-size: 0.8rem; }
+.link-btn {
+  background: none; border: none; color: var(--accent);
+  font-size: 0.8rem; font-weight: 700; text-decoration: underline;
+}
+.empty {
+  background: var(--card); border-radius: 8px; padding: 1.5rem;
+  color: var(--muted); text-align: center;
+}
+.empty .nav-btn { margin-top: 0.8rem; }
+.debug-list {
+  text-align: left; margin: 1rem auto 0; padding-left: 1.2rem;
+  max-width: 640px; font-size: 0.8rem;
+}
+.day { margin-bottom: 1.5rem; }
+.day-title {
+  display: flex; align-items: center; gap: 0.6rem; padding-bottom: 0.4rem;
+  margin-bottom: 0.8rem; border-bottom: 2px solid var(--dark);
+  font-size: 1rem; text-transform: uppercase;
+}
+.day-title.today { border-bottom-color: var(--accent); }
+.today-tag {
+  background: var(--accent); color: #fff; border-radius: 4px;
+  padding: 1px 6px; font-size: 0.65rem;
+}
+.day-count { margin-left: auto; color: var(--muted); font-size: 0.75rem; font-weight: 500; text-transform: none; }
+.cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+
+.game { background: var(--card); border-radius: 8px; padding: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+.game.clickable { cursor: pointer; }
+.game.clickable:hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,0,0,0.18); }
+.game-meta { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; }
+.badge { background: #eee; border-radius: 4px; padding: 2px 6px; font-size: 0.68rem; font-weight: 700; }
+.badge.live { background: var(--live); color: #fff; }
+.badge.final { background: var(--dark); color: #fff; }
+.tag { margin-left: auto; color: var(--muted); font-size: 0.65rem; font-weight: 700; text-transform: uppercase; }
+.team-row {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 0.5rem; padding: 0.35rem 0; font-size: 1.05rem;
+}
+.team-row.winner { font-weight: 800; }
+.team-info { display: flex; flex-direction: column; }
+.team-conf { color: var(--accent); font-size: 0.6rem; font-weight: 800; letter-spacing: 0.04em; }
+.team-record { color: var(--muted); font-size: 0.7rem; font-weight: 400; }
+.score { font-size: 1.2rem; font-weight: 800; }
+
+.summary { background: var(--card); border-radius: 8px; padding: 0.5rem 1rem; box-shadow: 0 1px 4px rgba(0,0,0,0.12); }
+.summary-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--line); }
+.summary-row:last-child { border-bottom: none; }
+.summary-row strong { font-size: 1.1rem; }
+
+.site-footer { padding: 1.5rem 2rem 2rem; color: var(--muted); font-size: 0.75rem; text-align: center; }
+
+/* ----- Teams page ----- */
+.teams-view { padding: 1rem 2rem 2rem; }
+
+.conf-section { margin-bottom: 2rem; }
+.conf-heading {
+  display: flex; align-items: baseline; gap: 0.8rem;
+  padding-bottom: 0.4rem; margin-bottom: 1rem;
+  border-bottom: 3px solid var(--accent);
+  font-size: 1.3rem;
+}
+.conf-count { color: var(--muted); font-size: 0.8rem; font-weight: 500; text-transform: none; }
+
+.teams-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.team-card {
+  display: flex; flex-direction: column; gap: 0.3rem; background: var(--card); border: none;
+  border-left: 6px solid var(--dark); border-radius: 8px; padding: 1rem; text-align: left;
+  font-size: 1rem; font-weight: 700; box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+.team-card:hover { transform: translateY(-2px); box-shadow: 0 3px 8px rgba(0,0,0,0.18); }
+.team-card-conf { color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em; }
+
+/* ----- Tabs ----- */
+.subtabs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin: 0.8rem 0 1rem; border-bottom: 2px solid var(--line); }
+.subtab {
+  background: none; border: none; border-bottom: 3px solid transparent; margin-bottom: -2px;
+  padding: 0.6rem 1.1rem; color: var(--muted); font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+}
+.subtab:hover { color: #111; }
+.subtab.active { color: #111; border-bottom-color: var(--accent); }
+
+.team-head { display: flex; align-items: center; gap: 0.8rem; margin-top: 1rem; }
+.team-head h2 { margin-bottom: 0; font-size: 1.4rem; }
+.team-conf-tag { background: var(--accent); color: #fff; border-radius: 4px; padding: 2px 8px; font-size: 0.7rem; font-weight: 800; }
+
+/* ----- Tables ----- */
+table { width: 100%; background: var(--card); border-collapse: collapse; border-radius: 8px; overflow: hidden; }
+th, td { padding: 0.6rem 0.8rem; text-align: left; border-bottom: 1px solid #eee; }
+th { background: var(--dark); color: #fff; font-size: 0.8rem; text-transform: uppercase; }
+
+.result { display: inline-block; min-width: 1.4rem; margin-right: 0.3rem; font-weight: 800; }
+.result.win { color: #1b7f3b; }
+.result.loss, .result.live { color: var(--live); }
+.schedule-table tr.next-game td { background: #fff4f4; font-weight: 700; }
+.schedule-table tr.clickable { cursor: pointer; }
+.schedule-table tr.clickable:hover td { background: #f7f7f7; }
+
+.roster-tools { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin: 0.8rem 0; }
+.roster-tools .status-line { margin-bottom: 0; }
+.search-box { padding: 0.5rem 0.8rem; border: 1px solid #bbb; border-radius: 6px; font-size: 0.9rem; min-width: 220px; }
+.player-link { background: none; border: none; padding: 0; color: var(--accent); font-size: inherit; font-weight: 700; text-align: left; }
+.player-link:hover { text-decoration: underline; }
+.pos { margin-left: 0.4rem; color: var(--muted); font-size: 0.7rem; font-weight: 400; }
+
+/* ----- Pop-ups ----- */
+.modal {
+  position: fixed; inset: 0; z-index: 50; display: flex; align-items: center;
+  justify-content: center; padding: 1rem; background: rgba(0,0,0,0.6);
+}
+.modal-top { z-index: 60; }
+.modal-box {
+  position: relative; width: 100%; max-width: 720px; max-height: 90vh;
+  overflow-y: auto; background: #fff; border-radius: 10px; padding: 1.5rem;
+}
+.modal-box.wide { max-width: 940px; }
+.modal-close { position: absolute; top: 0.6rem; right: 0.8rem; background: none; border: none; font-size: 1.8rem; line-height: 1; }
+
+.player-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.player-number {
+  display: flex; align-items: center; justify-content: center; width: 56px; height: 56px;
+  border-radius: 50%; background: var(--dark); color: #fff; font-size: 1.2rem; font-weight: 800;
+}
+.bio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.8rem; margin-bottom: 0.4rem; }
+.bio-grid dt { color: var(--muted); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+.bio-grid dd { font-weight: 700; }
+
+.stats-table th, .stats-table td,
+.box-table th, .box-table td { white-space: nowrap; text-align: center; padding: 0.45rem 0.6rem; font-size: 0.85rem; }
+.box-table td:first-child, .box-table th:first-child,
+.log-table td:first-child, .log-table th:first-child { text-align: left; }
+.stats-table tbody th { background: #f5f5f5; color: #111; text-align: left; text-transform: none; }
+.total-row th, .total-row td { background: #f5f5f5; color: #111; font-weight: 800; text-transform: none; }
+.log-table td, .log-table th { white-space: nowrap; text-align: center; padding: 0.45rem 0.6rem; font-size: 0.85rem; }
+.log-table td:nth-child(2) { text-align: left; }
+.note { margin-top: 0.5rem; color: var(--muted); font-size: 0.75rem; }
+
+/* ----- Game pop-up header ----- */
+.gh-teams { display: grid; gap: 0.3rem; margin-bottom: 0.3rem; max-width: 460px; }
+.gh-team { display: flex; justify-content: space-between; align-items: center; font-size: 1.3rem; }
+.gh-team.winner { font-weight: 800; }
+.gh-score { font-size: 1.7rem; font-weight: 800; }
+.linescore { margin: 0.8rem 0 0; max-width: 460px; }
+.linescore th, .linescore td { text-align: center; padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+.linescore th:first-child, .linescore td:first-child { text-align: left; }
+
+/* ----- Phones ----- */
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; }
+  .site-header, .controls, .layout, .teams-view { padding-left: 1rem; padding-right: 1rem; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<header class="site-header">
+  <h1 class="brand">HBCU <span>Surge</span></h1>
+
+  <nav class="view-tabs" aria-label="Choose a page">
+    <button class="view-btn active" data-view="scores">Scores</button>
+    <button class="view-btn" data-view="teams">Teams</button>
+  </nav>
+
+  <nav class="sport-tabs" aria-label="Choose a sport">
+    <button class="tab active" data-sport="football">Football</button>
+    <button class="tab" data-sport="basketball">Basketball</button>
+  </nav>
+</header>
+
+<!-- ==================== SCORES PAGE ==================== -->
+<section id="scores-controls" class="controls">
+  <div class="conf-filters" aria-label="Choose a conference">
+    <button class="chip active" data-conf="ALL">All</button>
+    <button class="chip" data-conf="SWAC">SWAC</button>
+    <button class="chip" data-conf="MEAC">MEAC</button>
+  </div>
+
+  <div class="week-nav" aria-label="Choose a week">
+    <button id="prev-week" class="nav-btn">&larr; Prev</button>
+    <div id="week-label" class="week-label"></div>
+    <button id="next-week" class="nav-btn">Next &rarr;</button>
+    <button id="this-week" class="nav-btn nav-btn-alt">This week</button>
+  </div>
+</section>
+
+<main id="scores-layout" class="layout">
+  <section>
+    <div class="status-bar">
+      <span id="status-text"></span>
+      <button id="refresh" class="link-btn">Refresh</button>
+    </div>
+    <p class="hint">Click any game to see its box score and player stats.</p>
+    <div id="schedule"></div>
+  </section>
+
+  <aside>
+    <h2>Week at a glance</h2>
+    <div id="summary" class="summary"></div>
+  </aside>
+</main>
+
+<!-- ==================== TEAMS PAGE ==================== -->
+<section id="teams-view" class="teams-view" hidden>
+
+  <!-- A. Every team, in a SWAC section and a MEAC section -->
+  <div id="teams-list-panel">
+    <p id="teams-status" class="status-line"></p>
+    <div id="teams-sections"></div>
+  </div>
+
+  <!-- B. One team, with Schedule and Roster sections -->
+  <div id="team-panel" hidden>
+    <button id="team-back" class="nav-btn">&larr; All teams</button>
+
+    <div class="team-head">
+      <h2 id="team-title"></h2>
+      <span id="team-conf-tag" class="team-conf-tag"></span>
+    </div>
+
+    <div id="detail-tabs" class="subtabs" aria-label="Choose what to view">
+      <button class="subtab active" data-ttab="schedule">Schedule</button>
+      <button class="subtab" data-ttab="roster">Roster</button>
+    </div>
+
+    <div id="schedule-pane">
+      <p id="team-schedule-status" class="status-line"></p>
+      <p class="hint">Click a game for its box score.</p>
+      <div class="table-wrap">
+        <table class="schedule-table">
+          <thead><tr><th>Date</th><th>Opponent</th><th>Result / Time</th></tr></thead>
+          <tbody id="team-schedule-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="roster-pane" hidden>
+      <div class="roster-tools">
+        <input id="roster-search" class="search-box" type="search"
+               placeholder="Search players" aria-label="Search players">
+        <span id="roster-status" class="status-line"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="roster-table">
+          <thead>
+            <tr><th>#</th><th>Name</th><th>Pos</th><th>Class</th><th>Ht</th><th>Wt</th><th>Hometown</th></tr>
+          </thead>
+          <tbody id="roster-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ==================== GAME POP-UP (box score) ==================== -->
+<div id="game-modal" class="modal" hidden>
+  <div class="modal-box wide" role="dialog" aria-modal="true" aria-label="Game details">
+    <button id="game-close" class="modal-close" aria-label="Close">&times;</button>
+    <div id="game-head"></div>
+    <div id="game-tabs" class="subtabs"></div>
+    <div id="game-body"></div>
+  </div>
+</div>
+
+<!-- ==================== PLAYER POP-UP ==================== -->
+<div id="player-modal" class="modal modal-top" hidden>
+  <div class="modal-box wide" role="dialog" aria-modal="true" aria-label="Player details">
+    <button id="modal-close" class="modal-close" aria-label="Close">&times;</button>
+    <div id="player-head"></div>
+    <div id="player-tabs" class="subtabs" aria-label="Choose what to view">
+      <button class="subtab active" data-ptab="games">Game by game</button>
+      <button class="subtab" data-ptab="season">Season totals</button>
+    </div>
+    <div id="player-games"></div>
+    <div id="player-season" hidden></div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>Scores, schedules, rosters and stats are for information only and may be delayed or incomplete.
+     This site is independent and is not affiliated with any conference or school.</p>
+</footer>
+
+
+<script>
+/* =====================================================================
+   ERROR BANNER: if anything breaks, a yellow box shows what happened.
+   (You can delete this block once everything works.)
+   ===================================================================== */
+function showErrorBanner(message) {
+  var box = document.createElement("pre");
+  box.style.cssText = "background:#fff3cd;color:#000;padding:12px;margin:0;white-space:pre-wrap;font-size:13px;";
+  box.textContent = "ERROR: " + message;
+  document.body.insertBefore(box, document.body.firstChild);
+}
+window.addEventListener("error", function (e) {
+  showErrorBanner(e.message + "  (line " + e.lineno + ")");
+});
+window.addEventListener("unhandledrejection", function (e) {
+  showErrorBanner(String(e.reason));
+});
+</script>
+
+<script>
+/* =====================================================================
+   HBCU Surge - all JavaScript
+   Sections:
+     1 Settings         2 Helpers          3 Scores data
+     4 Teams data       5 Game + player data
+     6 Scores page      7 Teams page
+     8 Game pop-up      9 Player pop-up
+    10 Buttons         11 Start
+   ===================================================================== */
+
+/* ---------- 1. SETTINGS (edit these) ---------- */
+
+// If you open the site at http://localhost:3000 (node server.js), data
+// goes through your helper server. Otherwise it is requested directly.
+var USE_SERVER = location.port === "3000";
+
+var CONFIG = {
+  // Unofficial data addresses. They can change or stop working without notice.
+  apiBase: USE_SERVER ? "/api/site/" : "https://site.api.espn.com/apis/site/v2/sports/",
+  athleteApi: USE_SERVER ? "/api/athlete/" : "https://site.web.api.espn.com/apis/common/v3/sports/",
+  basketballLeague: "basketball/mens-college-basketball",
+  footballLeague: "football/college-football",
+  basketballGroup: "50",   // all Division I
+  footballGroup: "81",     // FCS
+
+  // Optional real conference ID numbers (leave "" to use the team lists)
+  swacId: "",
+  meacId: "",
+
+  // CHECK swac.org and meacsports.com: memberships change over time.
+  swacTeams: [
+    "Alabama A&M", "Alabama State", "Alcorn State", "Arkansas-Pine Bluff",
+    "Bethune-Cookman", "Florida A&M", "Grambling", "Grambling State",
+    "Jackson State", "Mississippi Valley State", "Prairie View A&M",
+    "Southern", "Texas Southern"
+  ],
+  meacTeams: [
+    "Coppin State", "Delaware State", "Howard", "Maryland Eastern Shore", "UMES",
+    "Morgan State", "Norfolk State", "North Carolina Central", "NC Central",
+    "South Carolina State", "SC State"
+  ]
+};
+
+
+/* ---------- 2. HELPERS ---------- */
+function $(id) { return document.getElementById(id); }
+
+// Stops odd characters in names from breaking the page
+function esc(text) {
+  return String(text)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function pad(n) { return String(n).padStart(2, "0"); }
+
+function capitalize(text) {
+  text = String(text || "");
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+// Date -> "2026-11-07"
+function dayKey(date) {
+  return date.getFullYear() + "-" + pad(date.getMonth() + 1) + "-" + pad(date.getDate());
+}
+
+// Date -> "20261107"
+function apiDate(date) {
+  return date.getFullYear() + pad(date.getMonth() + 1) + pad(date.getDate());
+}
+
+function addDays(date, days) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate() + days);
+}
+
+// Weeks run Monday to Sunday
+function startOfWeek(date) {
+  var d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  var day = d.getDay();
+  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  return d;
+}
+
+function weekDays(weekStart) {
+  var days = [];
+  for (var i = 0; i < 7; i++) days.push(addDays(weekStart, i));
+  return days;
+}
+
+function weekRangeLabel(weekStart) {
+  var end = addDays(weekStart, 6);
+  var opts = { month: "short", day: "numeric" };
+  return weekStart.toLocaleDateString([], opts) + " \u2013 " +
+         end.toLocaleDateString([], opts) + ", " + end.getFullYear();
+}
+
+function dayHeading(key) {
+  var p = key.split("-");
+  var d = new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
+  return d.toLocaleDateString([], { weekday: "long", month: "long", day: "numeric" });
+}
+
+function leagueOf(sport) {
+  return sport === "football" ? CONFIG.footballLeague : CONFIG.basketballLeague;
+}
+
+function groupOf(sport) {
+  return sport === "football" ? CONFIG.footballGroup : CONFIG.basketballGroup;
+}
+
+// "Arkansas-Pine Bluff" -> "arkansas pine bluff"
+function normalize(text) {
+  return String(text || "").toLowerCase().replace(/[^a-z0-9&]/g, " ").replace(/\s+/g, " ").trim();
+}
+
+var SWAC_NAMES = CONFIG.swacTeams.map(normalize);
+var MEAC_NAMES = CONFIG.meacTeams.map(normalize);
+
+// Returns "SWAC", "MEAC", or null
+function detectConf(team) {
+  if (!team) return null;
+  if (CONFIG.swacId && String(team.conferenceId) === CONFIG.swacId) return "SWAC";
+  if (CONFIG.meacId && String(team.conferenceId) === CONFIG.meacId) return "MEAC";
+  var names = [team.location, team.shortDisplayName, team.displayName].map(normalize);
+  for (var i = 0; i < names.length; i++) {
+    if (SWAC_NAMES.indexOf(names[i]) !== -1) return "SWAC";
+    if (MEAC_NAMES.indexOf(names[i]) !== -1) return "MEAC";
+  }
+  return null;
+}
+
+// Downloads data. Error messages are short and don't include the web address.
+async function fetchJson(url) {
+  var response;
+  try {
+    response = await fetch(url);
+  } catch (error) {
+    console.warn("Request failed:", url, error);
+    throw new Error("the request was blocked or you are offline");
+  }
+  if (!response.ok) {
+    console.warn("Bad response:", url, response.status);
+    throw new Error("server answered with code " + response.status);
+  }
+  return response.json();
+}
+
+// Turns a score (number, text or object) into text
+function scoreText(score) {
+  if (score === undefined || score === null) return "";
+  if (typeof score === "object") {
+    if (score.displayValue !== undefined) return String(score.displayValue);
+    if (score.value !== undefined) return String(score.value);
+    return "";
+  }
+  return String(score);
+}
+
+// Label for a quarter/half column: 1, 2, 3, 4, OT, 2OT...
+function periodLabel(sport, i) {
+  var regular = sport === "football" ? 4 : 2;
+  if (i < regular) return String(i + 1);
+  var ot = i - regular + 1;
+  return ot === 1 ? "OT" : ot + "OT";
+}
+
+function shortDate(iso) {
+  var d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString([], { month: "short", day: "numeric" });
+}
+
+
+/* ---------- 3. SCORES DATA ---------- */
+var weekCache = {};
+
+// Converts one raw game. Returns null if no SWAC/MEAC team is involved.
+function convertEvent(event, sport, key) {
+  var comp = event.competitions && event.competitions[0];
+  if (!comp || !comp.competitors) return null;
+
+  var home = comp.competitors.find(function (c) { return c.homeAway === "home"; });
+  var away = comp.competitors.find(function (c) { return c.homeAway === "away"; });
+  if (!home || !away) return null;
+
+  var homeConf = detectConf(home.team);
+  var awayConf = detectConf(away.team);
+  if (!homeConf && !awayConf) return null;
+
+  var type = event.status.type;
+  var status = "scheduled";
+  if (type.state === "post") status = "final";
+  if (type.state === "in") status = "live";
+
+  var start = new Date(event.date);
+  var statusText = start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  var typeName = (type.name || "") + " " + (type.shortDetail || "");
+  if (status !== "scheduled" || /postponed|canceled|cancelled|delayed/i.test(typeName)) {
+    statusText = type.shortDetail || statusText;
+  }
+
+  function side(c, conf) {
+    return {
+      name: c.team.location || c.team.displayName,
+      conf: conf,
+      record: (c.records && c.records[0] && c.records[0].summary) || "",
+      score: status === "scheduled" ? null : Number(scoreText(c.score))
+    };
+  }
+
+  return {
+    id: String(event.id),
+    dayKey: key,
+    startMs: start.getTime(),
+    status: status,
+    statusText: statusText,
+    isConference: Boolean(homeConf) && homeConf === awayConf,
+    home: side(home, homeConf),
+    away: side(away, awayConf)
+  };
+}
+
+// Loads all 7 days of a week (one request per day)
+async function loadWeek(sport, weekStart, force) {
+  var cacheKey = sport + "|" + dayKey(weekStart);
+  if (!force && weekCache[cacheKey]) return weekCache[cacheKey];
+
+  var days = weekDays(weekStart);
+  var results = await Promise.allSettled(days.map(function (day) {
+    var url = CONFIG.apiBase + leagueOf(sport) + "/scoreboard?groups=" + groupOf(sport) +
+              "&limit=500&dates=" + apiDate(day);
+    return fetchJson(url);
+  }));
+
+  var games = [];
+  var seen = {};
+  var okCount = 0;
+
+  results.forEach(function (result, index) {
+    if (result.status !== "fulfilled") {
+      console.warn("A day failed to load:", result.reason);
+      return;
+    }
+    okCount++;
+    var key = dayKey(days[index]);
+    (result.value.events || []).forEach(function (event) {
+      if (seen[event.id]) return;
+      seen[event.id] = true;
+      var game = convertEvent(event, sport, key);
+      if (game) games.push(game);
+    });
+  });
+
+  var data = { games: games, source: okCount > 0 ? "live" : "error", loadedAt: new Date() };
+  if (okCount > 0) weekCache[cacheKey] = data;
+  return data;
+}
+
+
+/* ---------- 4. TEAMS DATA ---------- */
+var teamsCache = {};
+var scheduleCache = {};
+var rosterCache = {};
+var statsCache = {};
+
+function pickConferenceTeams(rawTeams) {
+  var seen = {};
+  var teams = [];
+  rawTeams.forEach(function (team) {
+    if (!team) return;
+    var conf = detectConf(team);
+    if (!conf || seen[team.id]) return;
+    seen[team.id] = true;
+    teams.push({
+      id: String(team.id),
+      name: team.location || team.displayName,
+      fullName: team.displayName,
+      conf: conf,
+      color: team.color || ""
+    });
+  });
+  return teams;
+}
+
+// Way 1 and 2: ask for a list of teams. Adds a note about what happened.
+async function tryTeamList(label, url, notes) {
+  try {
+    var json = await fetchJson(url);
+    var raw = json.sports[0].leagues[0].teams.map(function (item) { return item.team; });
+    var matched = pickConferenceTeams(raw);
+    notes.push(label + ": received " + raw.length + " teams, " + matched.length + " matched SWAC/MEAC.");
+    return matched;
+  } catch (error) {
+    notes.push(label + ": failed (" + error.message + ").");
+    return [];
+  }
+}
+
+// Way 3: collect teams from recent and upcoming games instead
+async function discoverFromGames(sport, notes) {
+  var base = CONFIG.apiBase + leagueOf(sport) + "/scoreboard?groups=" + groupOf(sport) + "&limit=500&dates=";
+  var today = new Date();
+  var urls = [];
+
+  if (sport === "football") {
+    urls.push(base + apiDate(addDays(today, -21)) + "-" + apiDate(addDays(today, 21)));
+  } else {
+    for (var i = -3; i <= 10; i++) urls.push(base + apiDate(addDays(today, i)));
+  }
+
+  var results = await Promise.allSettled(urls.map(fetchJson));
+  var raw = [];
+  var worked = 0;
+
+  results.forEach(function (result) {
+    if (result.status !== "fulfilled") return;
+    worked++;
+    (result.value.events || []).forEach(function (event) {
+      var comp = event.competitions && event.competitions[0];
+      if (!comp || !comp.competitors) return;
+      comp.competitors.forEach(function (c) { raw.push(c.team); });
+    });
+  });
+
+  var matched = pickConferenceTeams(raw);
+  notes.push("Teams from game schedules: " + worked + " of " + urls.length +
+             " requests worked, " + matched.length + " matched SWAC/MEAC.");
+  return matched;
+}
+
+// Tries three ways, in order, and stops at the first one that finds teams
+async function loadTeams(sport, notes) {
+  if (teamsCache[sport]) return teamsCache[sport];
+
+  var base = CONFIG.apiBase + leagueOf(sport) + "/teams";
+
+  var teams = await tryTeamList("Team list (filtered)", base + "?groups=" + groupOf(sport) + "&limit=500", notes);
+
+  if (teams.length === 0) {
+    teams = await tryTeamList("Team list (all teams)", base + "?limit=1000", notes);
+  }
+
+  if (teams.length === 0) {
+    teams = await discoverFromGames(sport, notes);
+  }
+
+  teams.sort(function (a, b) { return a.name.localeCompare(b.name); });
+  if (teams.length > 0) teamsCache[sport] = teams;
+  return teams;
+}
+
+// One schedule game, from the viewpoint of the chosen team
+function toScheduleGame(event, teamId) {
+  var comp = event.competitions && event.competitions[0];
+  if (!comp || !comp.competitors) return null;
+
+  var me = comp.competitors.find(function (c) { return String(c.team.id) === String(teamId); });
+  var opp = comp.competitors.find(function (c) { return String(c.team.id) !== String(teamId); });
+  if (!me || !opp) return null;
+
+  var statusObj = comp.status || event.status || {};
+  var type = statusObj.type || {};
+  var state = type.state || (type.completed ? "post" : "pre");
+
+  var status = "scheduled";
+  if (state === "post") status = "final";
+  if (state === "in") status = "live";
+
+  var myScore = scoreText(me.score);
+  var oppScore = scoreText(opp.score);
+
+  var result = "";
+  if (status === "final") {
+    if (me.winner === true) result = "W";
+    else if (me.winner === false) result = "L";
+    else if (myScore !== "" && oppScore !== "") result = Number(myScore) > Number(oppScore) ? "W" : "L";
+  }
+
+  return {
+    id: String(event.id),
+    startMs: new Date(comp.date || event.date).getTime(),
+    timeValid: comp.timeValid !== false,
+    opponent: opp.team.location || opp.team.displayName || opp.team.shortDisplayName || "TBD",
+    homeAway: me.homeAway,
+    neutral: Boolean(comp.neutralSite),
+    status: status,
+    statusText: type.shortDetail || "",
+    result: result,
+    scoreLine: (myScore !== "" && oppScore !== "") ? myScore + "-" + oppScore : ""
+  };
+}
+
+async function loadSchedule(sport, teamId) {
+  var key = sport + "|" + teamId;
+  if (scheduleCache[key]) return scheduleCache[key];
+
+  var json = await fetchJson(CONFIG.apiBase + leagueOf(sport) + "/teams/" + teamId + "/schedule");
+  var games = (json.events || [])
+    .map(function (event) { return toScheduleGame(event, teamId); })
+    .filter(Boolean)
+    .sort(function (a, b) { return a.startMs - b.startMs; });
+
+  scheduleCache[key] = games;
+  return games;
+}
+
+function toPlayer(a) {
+  var birth = a.birthPlace || {};
+  return {
+    id: String(a.id || ""),
+    name: a.fullName || a.displayName || "Unknown",
+    jersey: a.jersey || "",
+    position: (a.position && a.position.abbreviation) || "",
+    positionName: (a.position && a.position.displayName) || "",
+    height: a.displayHeight || "",
+    weight: a.displayWeight || "",
+    year: (a.experience && a.experience.displayValue) || "",
+    hometown: [birth.city, birth.state].filter(Boolean).join(", ")
+  };
+}
+
+async function loadRoster(sport, teamId) {
+  var key = sport + "|" + teamId;
+  if (rosterCache[key]) return rosterCache[key];
+
+  var json = await fetchJson(CONFIG.apiBase + leagueOf(sport) + "/teams/" + teamId + "/roster");
+
+  // Football rosters come grouped (offense, defense...). Flatten them.
+  var list = [];
+  (json.athletes || []).forEach(function (item) {
+    if (item.items) list = list.concat(item.items);
+    else list.push(item);
+  });
+
+  var players = list.map(toPlayer).filter(function (p) { return p.id; });
+
+  players.sort(function (a, b) {
+    var na = parseInt(a.jersey, 10);
+    var nb = parseInt(b.jersey, 10);
+    var aHas = !isNaN(na);
+    var bHas = !isNaN(nb);
+    if (aHas && bHas && na !== nb) return na - nb;
+    if (aHas !== bHas) return aHas ? -1 : 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  rosterCache[key] = players;
+  return players;
+}
+
+
+/* ---------- 5. GAME + PLAYER DATA ---------- */
+var summaryCache = {};
+var gamelogCache = {};
+
+var MONTHS = ["january", "february", "march", "april", "may", "june", "july",
+              "august", "september", "october", "november", "december"];
+
+// ----- Game details (box score) -----
+function parseSummary(json) {
+  var comp = json.header && json.header.competitions && json.header.competitions[0];
+  var teams = [];
+
+  if (comp && comp.competitors) {
+    teams = comp.competitors.map(function (c) {
+      var team = c.team || {};
+      return {
+        id: String(team.id || c.id || ""),
+        name: team.displayName || team.location || "Team",
+        homeAway: c.homeAway,
+        score: scoreText(c.score),
+        winner: c.winner === true,
+        lines: (c.linescores || []).map(function (l) {
+          return scoreText(l.displayValue !== undefined ? l.displayValue : l.value);
+        })
+      };
+    });
+    // Away team first, home team second
+    teams.sort(function (a, b) {
+      return (a.homeAway === "home" ? 1 : 0) - (b.homeAway === "home" ? 1 : 0);
+    });
+  }
+
+  var statusType = (comp && comp.status && comp.status.type) || {};
+
+  var box = [];
+  ((json.boxscore && json.boxscore.players) || []).forEach(function (entry) {
+    var team = entry.team || {};
+    var groups = (entry.statistics || []).map(function (g) {
+      return {
+        title: g.text || capitalize(g.name || ""),
+        labels: g.labels || [],
+        totals: g.totals || [],
+        players: (g.athletes || []).map(function (a) {
+          var ath = a.athlete || {};
+          return {
+            id: String(ath.id || ""),
+            name: ath.displayName || ath.shortName || "Player",
+            jersey: ath.jersey || "",
+            position: (ath.position && ath.position.abbreviation) || "",
+            stats: a.stats || [],
+            dnp: a.didNotPlay === true,
+            reason: a.reason || ""
+          };
+        })
+      };
+    });
+    box.push({ teamId: String(team.id || ""), teamName: team.displayName || "Team", groups: groups });
+  });
+
+  var teamStats = ((json.boxscore && json.boxscore.teams) || []).map(function (t) {
+    var team = t.team || {};
+    return {
+      teamId: String(team.id || ""),
+      teamName: team.displayName || "Team",
+      stats: (t.statistics || []).map(function (s) {
+        return {
+          label: s.label || s.name || "",
+          value: s.displayValue !== undefined ? String(s.displayValue) : ""
+        };
+      })
+    };
+  });
+
+  return {
+    teams: teams,
+    state: statusType.state || "",
+    statusText: statusType.shortDetail || "",
+    date: (comp && comp.date) || "",
+    venue: (json.gameInfo && json.gameInfo.venue && json.gameInfo.venue.fullName) || "",
+    box: box,
+    teamStats: teamStats
+  };
+}
+
+async function loadGameSummary(sport, gameId) {
+  var key = sport + "|" + gameId;
+  var hit = summaryCache[key];
+  if (hit && Date.now() - hit.time < 30000) return hit.data;
+
+  var json = await fetchJson(CONFIG.apiBase + leagueOf(sport) + "/summary?event=" + encodeURIComponent(gameId));
+  var data = parseSummary(json);
+  summaryCache[key] = { time: Date.now(), data: data };
+  return data;
+}
+
+// ----- Player game log (current season) -----
+function parseGamelog(json) {
+  var topLabels = json.labels || [];
+  var events = json.events || {};
+  var season = (json.requestedSeason && json.requestedSeason.displayName) || "";
+  var sections = [];
+
+  (json.seasonTypes || []).forEach(function (st) {
+    var groups = {};
+    var order = [];
+
+    (st.categories || []).forEach(function (cat) {
+      var name = cat.displayName || "";
+      var isMonth = MONTHS.indexOf(name.toLowerCase()) !== -1;
+      var title = (isMonth || !name) ? "" : name;
+
+      var group = groups[title];
+      if (!group) {
+        group = groups[title] = { title: title, labels: cat.labels || topLabels, rows: [], totals: null };
+        order.push(title);
+      }
+
+      (cat.events || []).forEach(function (e) {
+        var info = events[e.eventId] || {};
+        var opp = info.opponent || {};
+        group.rows.push({
+          date: info.gameDate || "",
+          atVs: info.atVs || "",
+          opp: opp.displayName || opp.abbreviation || "",
+          result: info.gameResult || "",
+          score: info.score || "",
+          stats: (e.stats || []).map(String)
+        });
+      });
+
+      if (!isMonth && cat.totals && cat.totals.length) group.totals = cat.totals.map(String);
+    });
+
+    var list = order.map(function (t) { return groups[t]; }).filter(function (g) { return g.rows.length > 0; });
+    list.forEach(function (g) {
+      g.rows.sort(function (a, b) { return String(a.date).localeCompare(String(b.date)); });
+    });
+
+    if (list.length > 0) sections.push({ title: st.displayName || "Season", groups: list });
+  });
+
+  return { season: season, sections: sections };
+}
+
+async function loadGamelog(sport, playerId) {
+  var key = sport + "|" + playerId;
+  if (gamelogCache[key]) return gamelogCache[key];
+
+  var json = await fetchJson(CONFIG.athleteApi + leagueOf(sport) + "/athletes/" + playerId + "/gamelog");
+  var data = parseGamelog(json);
+  gamelogCache[key] = data;
+  return data;
+}
+
+// ----- Player profile summary -----
+// Returns { title, labels, rows } or null if no stats exist
+async function loadPlayerStats(sport, playerId) {
+  var key = sport + "|" + playerId;
+  if (key in statsCache) return statsCache[key];
+
+  var json = await fetchJson(CONFIG.athleteApi + leagueOf(sport) + "/athletes/" + playerId + "/overview");
+  var stats = json.statistics;
+
+  var result = null;
+  if (stats && stats.labels && stats.splits && stats.splits.length > 0) {
+    result = {
+      title: stats.displayName || "Statistics",
+      labels: stats.labels,
+      rows: stats.splits.map(function (split) {
+        return { name: split.displayName || "", values: split.stats || [] };
+      })
+    };
+  }
+
+  statsCache[key] = result;
+  return result;
+}
+
+// Adds up a column of game stats. Percentages and averages show a dash.
+function calcTotals(labels, rows) {
+  var count = labels.length;
+  var out = [];
+
+  for (var j = 0; j < count; j++) {
+    var label = String(labels[j]).toUpperCase();
+    var vals = rows
+      .map(function (r) { return r.stats[j]; })
+      .filter(function (v) { return v !== undefined && v !== null && v !== "" && v !== "--"; })
+      .map(String);
+
+    if (vals.length === 0 || /%|AVG|RTG|QBR|PCT|YPC|YPA|Y\/A|\/G/.test(label)) {
+      out.push("\u2013");
+      continue;
+    }
+
+    var allNumbers = vals.every(function (v) { return /^-?\d+(\.\d+)?$/.test(v); });
+    if (allNumbers) {
+      var nums = vals.map(Number);
+      if (label === "LNG" || label === "LONG") {
+        out.push(String(Math.max.apply(null, nums)));
+      } else {
+        var sum = nums.reduce(function (a, b) { return a + b; }, 0);
+        out.push(String(Math.round(sum * 10) / 10));
+      }
+      continue;
+    }
+
+    var allPairs = vals.every(function (v) { return /^\d+[-\/]\d+$/.test(v); });
+    if (allPairs) {
+      var sep = vals[0].indexOf("/") !== -1 ? "/" : "-";
+      var left = 0;
+      var right = 0;
+      vals.forEach(function (v) {
+        var parts = v.split(/[-\/]/);
+        left += Number(parts[0]);
+        right += Number(parts[1]);
+      });
+      out.push(left + sep + right);
+      continue;
+    }
+
+    out.push("\u2013");
+  }
+
+  return out;
+}
+
+
+/* ---------- 6. SCORES PAGE ---------- */
+var state = {
+  view: "scores",           // "scores" or "teams"
+  sport: "football",
+  conf: "ALL",
+  weekStart: startOfWeek(new Date()),
+  games: [],
+  source: "",
+  loadedAt: null,
+  loading: false
+};
+
+var scoresRequest = 0;      // used to ignore outdated responses
+
+async function loadScores(force) {
+  var request = ++scoresRequest;
+  state.loading = true;
+  renderScores();
+
+  var result;
+  try {
+    result = await loadWeek(state.sport, state.weekStart, force);
+  } catch (error) {
+    console.error(error);
+    result = { games: [], source: "error", loadedAt: new Date() };
+  }
+
+  if (request !== scoresRequest) return;
+
+  state.games = result.games;
+  state.source = result.source;
+  state.loadedAt = result.loadedAt;
+  state.loading = false;
+  renderScores();
+}
+
+function visibleGames() {
+  return state.games
+    .filter(function (g) {
+      if (state.conf === "ALL") return true;
+      return g.home.conf === state.conf || g.away.conf === state.conf;
+    })
+    .sort(function (a, b) { return a.startMs - b.startMs; });
+}
+
+function renderTeamRow(team, isWinner, showScore) {
+  var confTag = team.conf ? '<span class="team-conf">' + team.conf + "</span>" : "";
+  var record = team.record ? '<span class="team-record">' + esc(team.record) + "</span>" : "";
+  return '<div class="team-row ' + (isWinner ? "winner" : "") + '">' +
+    '<div class="team-info"><span>' + esc(team.name) + "</span>" + confTag + record + "</div>" +
+    '<span class="score">' + (showScore ? team.score : "&ndash;") + "</span></div>";
+}
+
+function renderCard(game) {
+  var showScore = game.status !== "scheduled";
+  var isFinal = game.status === "final";
+  var awayWon = isFinal && game.away.score > game.home.score;
+  var homeWon = isFinal && game.home.score > game.away.score;
+
+  return '<article class="game clickable" data-game="' + esc(game.id) + '" tabindex="0" role="button">' +
+    '<div class="game-meta">' +
+    '<span class="badge ' + game.status + '">' + esc(game.statusText) + "</span>" +
+    (game.isConference ? '<span class="tag">Conference game</span>' : "") +
+    "</div>" +
+    renderTeamRow(game.away, awayWon, showScore) +
+    renderTeamRow(game.home, homeWon, showScore) +
+    "</article>";
+}
+
+function renderScores() {
+  // Week label
+  $("week-label").textContent = weekRangeLabel(state.weekStart);
+
+  // Status line
+  var text = "";
+  if (state.loading) text = "Loading games\u2026";
+  else if (state.source === "live") {
+    text = "Live scores \u00B7 updated " +
+      state.loadedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  } else if (state.source === "error") {
+    text = "Could not load scores. Check your connection and press Refresh.";
+  }
+  $("status-text").textContent = text;
+
+  // Day-by-day schedule
+  var container = $("schedule");
+  var games = state.loading ? [] : visibleGames();
+
+  if (state.loading) {
+    container.innerHTML = '<p class="empty">Loading games\u2026</p>';
+  } else if (games.length === 0) {
+    container.innerHTML = '<p class="empty">No games found for this week.</p>';
+  } else {
+    var todayKey = dayKey(new Date());
+    var html = "";
+
+    weekDays(state.weekStart).forEach(function (day) {
+      var key = dayKey(day);
+      var dayGames = games.filter(function (g) { return g.dayKey === key; });
+      if (dayGames.length === 0) return;
+
+      var isToday = key === todayKey;
+      html += '<section class="day"><h3 class="day-title ' + (isToday ? "today" : "") + '">' +
+        dayHeading(key) +
+        (isToday ? '<span class="today-tag">TODAY</span>' : "") +
+        '<span class="day-count">' + dayGames.length + (dayGames.length === 1 ? " game" : " games") + "</span></h3>" +
+        '<div class="cards">' + dayGames.map(renderCard).join("") + "</div></section>";
+    });
+
+    container.innerHTML = html;
+  }
+
+  // Week at a glance
+  function count(test) { return games.filter(test).length; }
+  var rows = [
+    ["Total games", games.length],
+    ["Completed", count(function (g) { return g.status === "final"; })],
+    ["In progress", count(function (g) { return g.status === "live"; })],
+    ["Upcoming", count(function (g) { return g.status === "scheduled"; })],
+    ["Conference games", count(function (g) { return g.isConference; })]
+  ];
+  $("summary").innerHTML = rows.map(function (r) {
+    return '<div class="summary-row"><span>' + r[0] + "</span><strong>" + r[1] + "</strong></div>";
+  }).join("");
+}
+
+
+/* ---------- 7. TEAMS PAGE ---------- */
+var tv = {
+  detailTab: "schedule",
+  teams: [],
+  notes: [],                // what happened while loading teams
+  team: null,
+  schedule: null,
+  roster: null,
+  teamsRequest: 0,
+  scheduleRequest: 0,
+  rosterRequest: 0
+};
+
+// Highlights one sub-tab button in a group
+function setActiveIn(containerId, attribute, value) {
+  document.querySelectorAll("#" + containerId + " .subtab").forEach(function (button) {
+    button.classList.toggle("active", button.getAttribute(attribute) === value);
+  });
+}
+
+async function openTeamList() {
+  tv.team = null;
+  $("team-panel").hidden = true;
+  $("teams-list-panel").hidden = false;
+  $("teams-sections").innerHTML = "";
+  $("teams-status").textContent = "Loading teams\u2026";
+
+  var request = ++tv.teamsRequest;
+  var notes = [];
+
+  try {
+    tv.teams = await loadTeams(state.sport, notes);
+  } catch (error) {
+    console.error(error);
+    notes.push("Unexpected problem: " + error.message);
+    tv.teams = [];
+  }
+
+  if (request !== tv.teamsRequest) return;
+  tv.notes = notes;
+  renderTeams();
+}
+
+function renderTeamCard(team) {
+  var color = /^[0-9a-f]{6}$/i.test(team.color) ? "#" + team.color : "#121212";
+  return '<button class="team-card" data-id="' + esc(team.id) + '" style="border-left-color: ' + color + '">' +
+    '<span class="team-card-name">' + esc(team.name) + "</span>" +
+    '<span class="team-card-conf">' + esc(team.conf) + "</span></button>";
+}
+
+// Draws a SWAC section and a MEAC section, one after the other
+function renderTeams() {
+  // Nothing found: explain what happened and offer a retry button
+  if (tv.teams.length === 0) {
+    $("teams-status").textContent = "";
+
+    var details = "";
+    if (tv.notes.length > 0) {
+      details = '<ul class="debug-list">' +
+        tv.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>";
+    }
+
+    $("teams-sections").innerHTML =
+      '<div class="empty"><p><strong>No teams could be loaded right now.</strong></p>' +
+      '<p>Details of what was tried:</p>' + details +
+      '<button class="nav-btn retry-teams">Try again</button></div>';
+    return;
+  }
+
+  $("teams-status").textContent = tv.teams.length + " teams \u00B7 click a team for its schedule and roster";
+
+  var html = "";
+
+  ["SWAC", "MEAC"].forEach(function (conf) {
+    var list = tv.teams.filter(function (t) { return t.conf === conf; });
+
+    html += '<section class="conf-section">' +
+      '<h2 class="conf-heading">' + conf +
+      '<span class="conf-count">' + list.length + (list.length === 1 ? " team" : " teams") + "</span></h2>";
+
+    if (list.length === 0) {
+      html += '<p class="muted">No ' + conf + " teams were found for this sport.</p>";
+    } else {
+      html += '<div class="teams-grid">' + list.map(renderTeamCard).join("") + "</div>";
+    }
+
+    html += "</section>";
+  });
+
+  $("teams-sections").innerHTML = html;
+}
+
+function openTeam(team) {
+  tv.team = team;
+  tv.schedule = null;
+  tv.roster = null;
+
+  $("teams-list-panel").hidden = true;
+  $("team-panel").hidden = false;
+  $("team-title").textContent = team.fullName;
+  $("team-conf-tag").textContent = team.conf;
+  $("roster-search").value = "";
+  $("team-schedule-body").innerHTML = "";
+  $("roster-body").innerHTML = "";
+  window.scrollTo(0, 0);
+
+  showDetailTab("schedule");
+}
+
+function showDetailTab(name) {
+  tv.detailTab = name;
+  setActiveIn("detail-tabs", "data-ttab", name);
+  $("schedule-pane").hidden = name !== "schedule";
+  $("roster-pane").hidden = name !== "roster";
+
+  if (name === "schedule") loadScheduleTab();
+  else loadRosterTab();
+}
+
+async function loadScheduleTab() {
+  if (tv.schedule) { renderSchedule(); return; }
+
+  var team = tv.team;
+  var request = ++tv.scheduleRequest;
+  $("team-schedule-body").innerHTML = "";
+  $("team-schedule-status").textContent = "Loading schedule\u2026";
+
+  try {
+    var games = await loadSchedule(state.sport, team.id);
+    if (request !== tv.scheduleRequest || tv.team !== team) return;
+    tv.schedule = games;
+  } catch (error) {
+    console.error(error);
+    if (request !== tv.scheduleRequest || tv.team !== team) return;
+    $("team-schedule-status").textContent = "Could not load this schedule (" + error.message + ").";
+    return;
+  }
+
+  renderSchedule();
+}
+
+function renderSchedule() {
+  var games = tv.schedule;
+
+  if (!games || games.length === 0) {
+    $("team-schedule-status").textContent = "No schedule is available for this team yet.";
+    $("team-schedule-body").innerHTML = "";
+    return;
+  }
+
+  var wins = games.filter(function (g) { return g.result === "W"; }).length;
+  var losses = games.filter(function (g) { return g.result === "L"; }).length;
+  $("team-schedule-status").textContent =
+    games.length + " games \u00B7 Results so far: " + wins + "-" + losses;
+
+  var nextGame = games.find(function (g) { return g.status !== "final"; });
+
+  $("team-schedule-body").innerHTML = games.map(function (game) {
+    var date = new Date(game.startMs);
+    var dateText = date.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric" });
+
+    var where = game.homeAway === "away" ? "@" : "vs";
+    if (game.neutral) where += " (N)";
+
+    var resultCell;
+    if (game.status === "final") {
+      var cls = game.result === "W" ? "win" : "loss";
+      resultCell = '<span class="result ' + cls + '">' + esc(game.result || "-") + "</span> " + esc(game.scoreLine);
+    } else if (game.status === "live") {
+      resultCell = '<span class="result live">' + esc(game.statusText || "LIVE") + "</span> " + esc(game.scoreLine);
+    } else if (game.timeValid) {
+      resultCell = date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    } else {
+      resultCell = "TBD";
+    }
+
+    return '<tr class="clickable ' + (game === nextGame ? "next-game" : "") + '" data-game="' + esc(game.id) + '">' +
+      "<td>" + esc(dateText) + "</td>" +
+      "<td>" + esc(where) + " " + esc(game.opponent) + "</td>" +
+      "<td>" + resultCell + "</td></tr>";
+  }).join("");
+}
+
+async function loadRosterTab() {
+  if (tv.roster) { renderRoster(); return; }
+
+  var team = tv.team;
+  var request = ++tv.rosterRequest;
+  $("roster-body").innerHTML = "";
+  $("roster-status").textContent = "Loading roster\u2026";
+
+  try {
+    var players = await loadRoster(state.sport, team.id);
+    if (request !== tv.rosterRequest || tv.team !== team) return;
+    tv.roster = players;
+  } catch (error) {
+    console.error(error);
+    if (request !== tv.rosterRequest || tv.team !== team) return;
+    $("roster-status").textContent = "Could not load this roster (" + error.message + ").";
+    return;
+  }
+
+  renderRoster();
+}
+
+function renderRoster() {
+  if (!tv.roster || tv.roster.length === 0) {
+    $("roster-status").textContent = "No roster is available for this team yet.";
+    $("roster-body").innerHTML = "";
+    return;
+  }
+
+  var search = $("roster-search").value.trim().toLowerCase();
+  var players = tv.roster.filter(function (p) { return p.name.toLowerCase().indexOf(search) !== -1; });
+
+  $("roster-status").textContent = players.length + (players.length === 1 ? " player" : " players");
+
+  $("roster-body").innerHTML = players.map(function (p) {
+    return "<tr><td>" + esc(p.jersey) + "</td>" +
+      '<td><button class="player-link" data-id="' + esc(p.id) + '">' + esc(p.name) + "</button></td>" +
+      "<td>" + esc(p.position) + "</td><td>" + esc(p.year) + "</td>" +
+      "<td>" + esc(p.height) + "</td><td>" + esc(p.weight) + "</td>" +
+      "<td>" + esc(p.hometown) + "</td></tr>";
+  }).join("");
+}
+
+
+/* ---------- 8. GAME POP-UP (box score) ---------- */
+var gv = {
+  data: null,
+  ordered: [],       // box score teams, away first
+  tabs: [],          // [{ key, label }]
+  tab: "",
+  players: {},       // id -> basic info, used when a name is clicked
+  request: 0
+};
+
+async function openGame(gameId) {
+  var request = ++gv.request;
+  gv.data = null;
+  gv.players = {};
+
+  $("game-head").innerHTML = '<p class="muted">Loading game\u2026</p>';
+  $("game-tabs").innerHTML = "";
+  $("game-body").innerHTML = "";
+  $("game-modal").hidden = false;
+
+  var data;
+  try {
+    data = await loadGameSummary(state.sport, gameId);
+  } catch (error) {
+    console.error(error);
+    if (request !== gv.request) return;
+    $("game-head").innerHTML = '<p class="muted">Could not load this game (' + esc(error.message) + ").</p>";
+    return;
+  }
+
+  if (request !== gv.request || $("game-modal").hidden) return;
+
+  gv.data = data;
+  renderGameHead();
+  buildGameTabs();
+  renderGameBody();
+}
+
+function renderGameHead() {
+  var d = gv.data;
+
+  if (d.teams.length === 0) {
+    $("game-head").innerHTML = "<h3>Game details</h3>";
+    return;
+  }
+
+  var teamsHtml = d.teams.map(function (t) {
+    return '<div class="gh-team ' + (t.winner ? "winner" : "") + '"><span>' + esc(t.name) +
+      '</span><span class="gh-score">' + esc(t.score) + "</span></div>";
+  }).join("");
+
+  var bits = [];
+  if (d.statusText) bits.push(d.statusText);
+  if (d.date) {
+    var when = new Date(d.date);
+    if (!isNaN(when.getTime())) {
+      bits.push(when.toLocaleDateString([], { weekday: "short", month: "short", day: "numeric", year: "numeric" }));
+    }
+  }
+  if (d.venue) bits.push(d.venue);
+
+  var lineHtml = "";
+  var periods = Math.max.apply(null, d.teams.map(function (t) { return t.lines.length; }).concat([0]));
+  if (periods > 0) {
+    var head = "";
+    for (var i = 0; i < periods; i++) head += "<th>" + periodLabel(state.sport, i) + "</th>";
+
+    var rows = d.teams.map(function (t) {
+      var cells = "";
+      for (var j = 0; j < periods; j++) cells += "<td>" + esc(t.lines[j] !== undefined ? t.lines[j] : "") + "</td>";
+      return "<tr><td>" + esc(t.name) + "</td>" + cells + "<td><strong>" + esc(t.score) + "</strong></td></tr>";
+    }).join("");
+
+    lineHtml = '<table class="linescore"><thead><tr><th></th>' + head + "<th>T</th></tr></thead><tbody>" + rows + "</tbody></table>";
+  }
+
+  $("game-head").innerHTML =
+    '<div class="gh-teams">' + teamsHtml + "</div>" +
+    '<p class="muted">' + esc(bits.join(" \u00B7 ")) + "</p>" + lineHtml;
+}
+
+// Puts the box score teams in away-then-home order
+function orderBox(data) {
+  var ordered = [];
+  data.teams.forEach(function (t) {
+    var found = data.box.find(function (b) { return b.teamId === t.id; });
+    if (found && ordered.indexOf(found) === -1) ordered.push(found);
+  });
+  data.box.forEach(function (b) {
+    if (ordered.indexOf(b) === -1) ordered.push(b);
+  });
+  return ordered;
+}
+
+function buildGameTabs() {
+  var d = gv.data;
+  gv.ordered = orderBox(d);
+  gv.tabs = gv.ordered.map(function (b, i) { return { key: "t" + i, label: b.teamName }; });
+  if (d.teamStats.length > 0) gv.tabs.push({ key: "stats", label: "Team stats" });
+  gv.tab = gv.tabs.length > 0 ? gv.tabs[0].key : "";
+
+  $("game-tabs").innerHTML = gv.tabs.map(function (t) {
+    return '<button class="subtab ' + (t.key === gv.tab ? "active" : "") + '" data-gtab="' + t.key + '">' + esc(t.label) + "</button>";
+  }).join("");
+}
+
+function renderTeamBox(b) {
+  var html = "";
+  var showTitles = b.groups.length > 1;
+
+  b.groups.forEach(function (group) {
+    if (group.players.length === 0) return;
+
+    var count = group.labels.length;
+    var head = group.labels.map(function (l) { return "<th>" + esc(l) + "</th>"; }).join("");
+
+    var rows = group.players.map(function (p) {
+      if (p.id) {
+        gv.players[p.id] = {
+          id: p.id, name: p.name, jersey: p.jersey,
+          positionName: p.position, teamName: b.teamName
+        };
+      }
+
+      var nameCell = p.id
+        ? '<button class="player-link" data-pid="' + esc(p.id) + '">' + esc(p.name) + "</button>"
+        : esc(p.name);
+      var pos = p.position ? '<span class="pos">' + esc(p.position) + "</span>" : "";
+
+      var cells;
+      if (p.stats.length > 0) {
+        cells = p.stats.map(function (v) { return "<td>" + esc(v) + "</td>"; }).join("");
+      } else {
+        cells = '<td colspan="' + Math.max(count, 1) + '" class="muted">' +
+          (p.dnp ? "DNP" + (p.reason ? " \u2013 " + esc(p.reason) : "") : "\u2013") + "</td>";
+      }
+
+      return "<tr><td>" + nameCell + pos + "</td>" + cells + "</tr>";
+    }).join("");
+
+    var totals = "";
+    if (group.totals.length > 0) {
+      totals = '<tr class="total-row"><th>Team</th>' +
+        group.totals.map(function (v) { return "<td>" + esc(v) + "</td>"; }).join("") + "</tr>";
+    }
+
+    html += (showTitles && group.title ? "<h4>" + esc(group.title) + "</h4>" : "") +
+      '<div class="table-wrap"><table class="box-table"><thead><tr><th>Player</th>' + head +
+      "</tr></thead><tbody>" + rows + totals + "</tbody></table></div>";
+  });
+
+  return html || '<p class="muted">No player stats are available for this team.</p>';
+}
+
+function renderTeamStats() {
+  var d = gv.data;
+  if (d.teamStats.length === 0) return '<p class="muted">No team stats are available.</p>';
+
+  // Put the teams in the same order as the scoreboard (away first)
+  var list = d.teamStats.slice();
+  list.sort(function (a, b) {
+    function rank(t) {
+      var idx = d.teams.findIndex(function (x) { return x.id === t.teamId; });
+      return idx === -1 ? 99 : idx;
+    }
+    return rank(a) - rank(b);
+  });
+
+  var first = list[0];
+  var second = list[1];
+
+  var rows = first.stats.map(function (s) {
+    var match = second ? second.stats.find(function (x) { return x.label === s.label; }) : null;
+    return "<tr><td>" + esc(s.label) + "</td><td>" + esc(s.value) + "</td><td>" + esc(match ? match.value : "") + "</td></tr>";
+  }).join("");
+
+  return '<div class="table-wrap"><table class="box-table"><thead><tr><th>Stat</th><th>' +
+    esc(first.teamName) + "</th><th>" + esc(second ? second.teamName : "") + "</th></tr></thead><tbody>" +
+    rows + "</tbody></table></div>";
+}
+
+function renderGameBody() {
+  var d = gv.data;
+  var html;
+
+  if (gv.tabs.length === 0) {
+    html = d.state === "pre"
+      ? '<p class="muted">This game has not started yet. Stats will appear once it begins.</p>'
+      : '<p class="muted">A box score is not available for this game.</p>';
+  } else if (gv.tab === "stats") {
+    html = renderTeamStats();
+  } else {
+    var index = parseInt(gv.tab.slice(1), 10);
+    html = renderTeamBox(gv.ordered[index]);
+  }
+
+  $("game-body").innerHTML = html;
+}
+
+function closeGame() {
+  $("game-modal").hidden = true;
+}
+
+
+/* ---------- 9. PLAYER POP-UP ---------- */
+var pv = {
+  info: null,
+  tab: "games",
+  request: 0
+};
+
+function bioItem(label, value) {
+  if (!value) return "";
+  return "<div><dt>" + esc(label) + "</dt><dd>" + esc(value) + "</dd></div>";
+}
+
+function renderStatsTable(stats) {
+  if (!stats) return "";
+
+  var head = stats.labels.map(function (l) { return "<th>" + esc(l) + "</th>"; }).join("");
+  var rows = stats.rows.map(function (row) {
+    var cells = row.values.map(function (v) { return "<td>" + esc(v) + "</td>"; }).join("");
+    return '<tr><th scope="row">' + esc(row.name) + "</th>" + cells + "</tr>";
+  }).join("");
+
+  return "<h4>" + esc(stats.title) + "</h4>" +
+    '<div class="table-wrap"><table class="stats-table"><thead><tr><th></th>' + head +
+    "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+}
+
+// Column labels, or generic ones if the data doesn't line up
+function columnLabels(labels, rows) {
+  var widest = rows.reduce(function (m, r) { return Math.max(m, r.stats.length); }, 0);
+  if (labels.length === widest) return labels;
+
+  var generic = [];
+  for (var i = 0; i < widest; i++) generic.push("Stat " + (i + 1));
+  return generic;
+}
+
+// Game-by-game tab
+function renderGameLog(log) {
+  if (!log || log.sections.length === 0) {
+    return '<p class="muted">No games have been recorded for this player this season yet.</p>';
+  }
+
+  var html = "";
+  if (log.season) html += '<p class="muted">Season: ' + esc(log.season) + "</p>";
+
+  log.sections.forEach(function (section) {
+    section.groups.forEach(function (group) {
+      var labels = columnLabels(group.labels, group.rows);
+      var head = labels.map(function (l) { return "<th>" + esc(l) + "</th>"; }).join("");
+
+      var rows = group.rows.map(function (r) {
+        var cells = r.stats.map(function (v) { return "<td>" + esc(v) + "</td>"; }).join("");
+        var result = (r.result ? r.result + " " : "") + r.score;
+        return "<tr><td>" + esc(shortDate(r.date)) + "</td>" +
+          "<td>" + esc((r.atVs ? r.atVs + " " : "") + r.opp) + "</td>" +
+          "<td>" + esc(result) + "</td>" + cells + "</tr>";
+      }).join("");
+
+      html += "<h4>" + esc(section.title + (group.title ? " \u00B7 " + group.title : "")) + "</h4>" +
+        '<div class="table-wrap"><table class="log-table"><thead><tr><th>Date</th><th>Opponent</th><th>Result</th>' +
+        head + "</tr></thead><tbody>" + rows + "</tbody></table></div>";
+    });
+  });
+
+  return html;
+}
+
+// Season totals tab
+function renderSeasonTotals(log, overview) {
+  var html = "";
+
+  if (log && log.sections.length > 0) {
+    if (log.season) html += '<p class="muted">Season: ' + esc(log.season) + "</p>";
+    var anyCalculated = false;
+
+    log.sections.forEach(function (section) {
+      section.groups.forEach(function (group) {
+        var labels = columnLabels(group.labels, group.rows);
+        var useSource = group.totals && group.totals.length === labels.length;
+        var totals = useSource ? group.totals : calcTotals(labels, group.rows);
+        if (!useSource) anyCalculated = true;
+
+        var head = labels.map(function (l) { return "<th>" + esc(l) + "</th>"; }).join("");
+        var cells = totals.map(function (v) { return "<td>" + esc(v) + "</td>"; }).join("");
+        var rowLabel = (useSource ? "Season totals" : "Totals") + " (" + group.rows.length +
+          (group.rows.length === 1 ? " game)" : " games)");
+
+        html += "<h4>" + esc(section.title + (group.title ? " \u00B7 " + group.title : "")) + "</h4>" +
+          '<div class="table-wrap"><table class="log-table"><thead><tr><th>' + "</th>" + head +
+          '</tr></thead><tbody><tr class="total-row"><th>' + esc(rowLabel) + "</th>" + cells +
+          "</tr></tbody></table></div>";
+      });
+    });
+
+    if (anyCalculated) {
+      html += '<p class="note">Totals are added up from the games listed. Percentages and averages show a dash.</p>';
+    }
+  }
+
+  if (overview) {
+    html += renderStatsTable({ title: "Season summary", labels: overview.labels, rows: overview.rows });
+  }
+
+  return html || '<p class="muted">Season totals are not available for this player yet.</p>';
+}
+
+function setPlayerTab(name) {
+  pv.tab = name;
+  setActiveIn("player-tabs", "data-ptab", name);
+  $("player-games").hidden = name !== "games";
+  $("player-season").hidden = name !== "season";
+}
+
+async function openPlayer(info) {
+  if (!info || !info.id) return;
+  pv.info = info;
+
+  var sub = [info.teamName, info.positionName].filter(Boolean).join(" \u00B7 ");
+
+  $("player-head").innerHTML =
+    '<div class="player-head"><div class="player-number">' + esc(info.jersey || "-") + "</div><div>" +
+    "<h3>" + esc(info.name) + "</h3>" +
+    '<p class="muted">' + esc(sub) + "</p></div></div>" +
+    '<dl class="bio-grid">' +
+    bioItem("Class", info.year) + bioItem("Height", info.height) +
+    bioItem("Weight", info.weight) + bioItem("Hometown", info.hometown) +
+    "</dl>";
+
+  $("player-games").innerHTML = '<p class="muted">Loading games\u2026</p>';
+  $("player-season").innerHTML = '<p class="muted">Loading season totals\u2026</p>';
+  setPlayerTab("games");
+  $("player-modal").hidden = false;
+
+  var request = ++pv.request;
+  var sport = state.sport;
+
+  var results = await Promise.allSettled([
+    loadGamelog(sport, info.id),
+    loadPlayerStats(sport, info.id)
+  ]);
+
+  // Skip if the pop-up was closed or another player was opened
+  if (request !== pv.request || $("player-modal").hidden) return;
+
+  var logResult = results[0];
+  var overviewResult = results[1];
+  var log = logResult.status === "fulfilled" ? logResult.value : null;
+  var overview = overviewResult.status === "fulfilled" ? overviewResult.value : null;
+
+  if (logResult.status !== "fulfilled") {
+    console.warn("Game log failed:", logResult.reason);
+    $("player-games").innerHTML = '<p class="muted">Game-by-game stats could not be loaded (' +
+      esc(logResult.reason.message) + ").</p>";
+  } else {
+    $("player-games").innerHTML = renderGameLog(log);
+  }
+
+  $("player-season").innerHTML = renderSeasonTotals(log, overview);
+}
+
+function closePlayer() {
+  $("player-modal").hidden = true;
+}
+
+
+/* ---------- 10. BUTTONS ---------- */
+function showView(name) {
+  state.view = name;
+  var isTeams = name === "teams";
+
+  document.querySelectorAll(".view-btn").forEach(function (b) {
+    b.classList.toggle("active", b.dataset.view === name);
+  });
+
+  $("scores-controls").hidden = isTeams;
+  $("scores-layout").hidden = isTeams;
+  $("teams-view").hidden = !isTeams;
+
+  if (isTeams) openTeamList();
+}
+
+function bindEvents() {
+  // Scores / Teams
+  document.querySelectorAll(".view-btn").forEach(function (button) {
+    button.addEventListener("click", function () { showView(button.dataset.view); });
+  });
+
+  // Football / Basketball
+  document.querySelectorAll(".tab").forEach(function (button) {
+    button.addEventListener("click", function () {
+      state.sport = button.dataset.sport;
+      document.querySelectorAll(".tab").forEach(function (b) { b.classList.remove("active"); });
+      button.classList.add("active");
+
+      if (state.view === "teams") openTeamList();
+      else loadScores(false);
+    });
+  });
+
+  // Scores page: All / SWAC / MEAC filter
+  document.querySelectorAll(".chip").forEach(function (button) {
+    button.addEventListener("click", function () {
+      state.conf = button.dataset.conf;
+      document.querySelectorAll(".chip").forEach(function (b) { b.classList.remove("active"); });
+      button.classList.add("active");
+      renderScores();
+    });
+  });
+
+  // Scores page: week buttons
+  $("prev-week").addEventListener("click", function () {
+    state.weekStart = addDays(state.weekStart, -7);
+    loadScores(false);
+  });
+  $("next-week").addEventListener("click", function () {
+    state.weekStart = addDays(state.weekStart, 7);
+    loadScores(false);
+  });
+  $("this-week").addEventListener("click", function () {
+    state.weekStart = startOfWeek(new Date());
+    loadScores(false);
+  });
+  $("refresh").addEventListener("click", function () { loadScores(true); });
+
+  // Scores page: click a game card (or press Enter on it)
+  $("schedule").addEventListener("click", function (event) {
+    var card = event.target.closest(".game[data-game]");
+    if (card) openGame(card.dataset.game);
+  });
+  $("schedule").addEventListener("keydown", function (event) {
+    if (event.key !== "Enter") return;
+    var card = event.target.closest(".game[data-game]");
+    if (card) openGame(card.dataset.game);
+  });
+
+  // Teams page: click a team, or the "Try again" button
+  $("teams-sections").addEventListener("click", function (event) {
+    if (event.target.closest(".retry-teams")) {
+      openTeamList();
+      return;
+    }
+    var card = event.target.closest(".team-card");
+    if (!card) return;
+    var team = tv.teams.find(function (t) { return t.id === card.dataset.id; });
+    if (team) openTeam(team);
+  });
+
+  // Back to the team list
+  $("team-back").addEventListener("click", openTeamList);
+
+  // Schedule / Roster sections
+  $("detail-tabs").addEventListener("click", function (event) {
+    var button = event.target.closest(".subtab");
+    if (button) showDetailTab(button.dataset.ttab);
+  });
+
+  // Team schedule: click a game row
+  $("team-schedule-body").addEventListener("click", function (event) {
+    var row = event.target.closest("tr[data-game]");
+    if (row) openGame(row.dataset.game);
+  });
+
+  // Roster search and player clicks
+  $("roster-search").addEventListener("input", renderRoster);
+  $("roster-body").addEventListener("click", function (event) {
+    var link = event.target.closest(".player-link");
+    if (!link) return;
+    var p = (tv.roster || []).find(function (x) { return x.id === link.dataset.id; });
+    if (!p) return;
+    openPlayer({
+      id: p.id, name: p.name, jersey: p.jersey,
+      positionName: p.positionName || p.position,
+      teamName: tv.team ? tv.team.fullName : "",
+      year: p.year, height: p.height, weight: p.weight, hometown: p.hometown
+    });
+  });
+
+  // Game pop-up: tabs, player names, close
+  $("game-tabs").addEventListener("click", function (event) {
+    var button = event.target.closest(".subtab");
+    if (!button) return;
+    gv.tab = button.dataset.gtab;
+    setActiveIn("game-tabs", "data-gtab", gv.tab);
+    renderGameBody();
+  });
+  $("game-body").addEventListener("click", function (event) {
+    var link = event.target.closest(".player-link");
+    if (link) openPlayer(gv.players[link.dataset.pid]);
+  });
+  $("game-close").addEventListener("click", closeGame);
+  $("game-modal").addEventListener("click", function (event) {
+    if (event.target === $("game-modal")) closeGame();
+  });
+
+  // Player pop-up: tabs and close
+  $("player-tabs").addEventListener("click", function (event) {
+    var button = event.target.closest(".subtab");
+    if (button) setPlayerTab(button.dataset.ptab);
+  });
+  $("modal-close").addEventListener("click", closePlayer);
+  $("player-modal").addEventListener("click", function (event) {
+    if (event.target === $("player-modal")) closePlayer();
+  });
+
+  // Escape closes the top-most pop-up
+  document.addEventListener("keydown", function (event) {
+    if (event.key !== "Escape") return;
+    if (!$("player-modal").hidden) closePlayer();
+    else if (!$("game-modal").hidden) closeGame();
+  });
+}
+
+
+/* ---------- 11. START ---------- */
+bindEvents();
+loadScores(false);
+</script>
+
+</body>
+</html>

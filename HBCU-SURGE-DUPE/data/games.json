@@ -1,0 +1,20 @@
+{
+  "teams": {
+    "JSU":  { "name": "Jackson State",          "conf": "SWAC" },
+    "GRAM": { "name": "Grambling State",        "conf": "SWAC" },
+    "FAMU": { "name": "Florida A&M",            "conf": "SWAC" },
+    "SOU":  { "name": "Southern",               "conf": "SWAC" },
+    "HOW":  { "name": "Howard",                 "conf": "MEAC" },
+    "NSU":  { "name": "Norfolk State",          "conf": "MEAC" },
+    "NCCU": { "name": "North Carolina Central", "conf": "MEAC" },
+    "SCSU": { "name": "South Carolina State",   "conf": "MEAC" }
+  },
+  "games": [
+    { "id": 1, "sport": "football",   "date": "2026-11-07", "home": "JSU",  "away": "GRAM", "homeScore": 28,   "awayScore": 24,   "status": "final" },
+    { "id": 2, "sport": "football",   "date": "2026-11-07", "home": "FAMU", "away": "SOU",  "homeScore": null, "awayScore": null, "status": "scheduled", "time": "2:00 PM" },
+    { "id": 3, "sport": "football",   "date": "2026-11-07", "home": "HOW",  "away": "NSU",  "homeScore": 17,   "awayScore": 20,   "status": "final" },
+    { "id": 4, "sport": "football",   "date": "2026-11-07", "home": "NCCU", "away": "SCSU", "homeScore": 31,   "awayScore": 14,   "status": "final" },
+    { "id": 5, "sport": "basketball", "date": "2026-11-08", "home": "SOU",  "away": "JSU",  "homeScore": 71,   "awayScore": 68,   "status": "final" },
+    { "id": 6, "sport": "basketball", "date": "2026-11-08", "home": "NSU",  "away": "HOW",  "homeScore": null, "awayScore": null, "status": "scheduled", "time": "7:00 PM" }
+  ]
+}

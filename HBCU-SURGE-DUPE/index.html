@@ -92,10 +92,10 @@ h4 { margin: 1.2rem 0 0.5rem; font-size: 0.95rem; }
   color: var(--muted); text-align: center;
 }
 .empty .nav-btn { margin-top: 0.8rem; }
-.debug-list {
-  text-align: left; margin: 1rem auto 0; padding-left: 1.2rem;
-  max-width: 640px; font-size: 0.8rem;
-}
+.fallback-note { margin-bottom: 1.5rem; text-align: left; font-size: 0.9rem; }
+.fallback-note p { margin-bottom: 0.4rem; }
+.fallback-note details { margin-top: 0.6rem; font-size: 0.8rem; }
+.debug-list { margin: 0.5rem 0 0; padding-left: 1.2rem; font-size: 0.8rem; }
 .day { margin-bottom: 1.5rem; }
 .day-title {
   display: flex; align-items: center; gap: 0.6rem; padding-bottom: 0.4rem;
@@ -401,14 +401,32 @@ window.addEventListener("unhandledrejection", function (e) {
 
 /* ---------- 1. SETTINGS (edit these) ---------- */
 
-// If you open the site at http://localhost:3000 (node server.js), data
-// goes through your helper server. Otherwise it is requested directly.
+// If this site is hosted on GitHub Pages, live data usually needs a small
+// free "data helper". After you create it (see the setup steps), paste its
+// address between the quotes, like:  "https://hbcu-surge.yourname.workers.dev"
+var PROXY_URL = "";
+
+// Which route the data takes:
+//   1. http://localhost:3000 (node server.js)  -> your helper server
+//   2. PROXY_URL filled in                      -> your online data helper
+//   3. otherwise                                -> straight from the browser
 var USE_SERVER = location.port === "3000";
+var SITE_BASE = "https://site.api.espn.com/apis/site/v2/sports/";
+var ATHLETE_BASE = "https://site.web.api.espn.com/apis/common/v3/sports/";
+
+if (USE_SERVER) {
+  SITE_BASE = "/api/site/";
+  ATHLETE_BASE = "/api/athlete/";
+} else if (PROXY_URL) {
+  var proxyRoot = PROXY_URL.replace(/\/+$/, "");
+  SITE_BASE = proxyRoot + "/site/";
+  ATHLETE_BASE = proxyRoot + "/athlete/";
+}
 
 var CONFIG = {
   // Unofficial data addresses. They can change or stop working without notice.
-  apiBase: USE_SERVER ? "/api/site/" : "https://site.api.espn.com/apis/site/v2/sports/",
-  athleteApi: USE_SERVER ? "/api/athlete/" : "https://site.web.api.espn.com/apis/common/v3/sports/",
+  apiBase: SITE_BASE,
+  athleteApi: ATHLETE_BASE,
   basketballLeague: "basketball/mens-college-basketball",
   footballLeague: "football/college-football",
   basketballGroup: "50",   // all Division I
@@ -429,6 +447,32 @@ var CONFIG = {
     "Coppin State", "Delaware State", "Howard", "Maryland Eastern Shore", "UMES",
     "Morgan State", "Norfolk State", "North Carolina Central", "NC Central",
     "South Carolina State", "SC State"
+  ],
+
+  // Built-in team list. The Teams page shows this when live team data
+  // can't be loaded. "noFootball" hides a school on the football tab.
+  // CHECK this against swac.org and meacsports.com too.
+  fallbackTeams: [
+    { name: "Alabama A&M", conf: "SWAC" },
+    { name: "Alabama State", conf: "SWAC" },
+    { name: "Alcorn State", conf: "SWAC" },
+    { name: "Arkansas-Pine Bluff", conf: "SWAC" },
+    { name: "Bethune-Cookman", conf: "SWAC" },
+    { name: "Florida A&M", conf: "SWAC" },
+    { name: "Grambling State", conf: "SWAC", aliases: ["Grambling"] },
+    { name: "Jackson State", conf: "SWAC" },
+    { name: "Mississippi Valley State", conf: "SWAC" },
+    { name: "Prairie View A&M", conf: "SWAC" },
+    { name: "Southern", conf: "SWAC" },
+    { name: "Texas Southern", conf: "SWAC" },
+    { name: "Coppin State", conf: "MEAC", noFootball: true },
+    { name: "Delaware State", conf: "MEAC" },
+    { name: "Howard", conf: "MEAC" },
+    { name: "Maryland Eastern Shore", conf: "MEAC", aliases: ["UMES"], noFootball: true },
+    { name: "Morgan State", conf: "MEAC" },
+    { name: "Norfolk State", conf: "MEAC" },
+    { name: "North Carolina Central", conf: "MEAC", aliases: ["NC Central"] },
+    { name: "South Carolina State", conf: "MEAC", aliases: ["SC State"] }
   ]
 };
 
@@ -527,7 +571,7 @@ async function fetchJson(url) {
     response = await fetch(url);
   } catch (error) {
     console.warn("Request failed:", url, error);
-    throw new Error("the request was blocked or you are offline");
+    throw new Error("the browser could not reach the data source; it may be blocked");
   }
   if (!response.ok) {
     console.warn("Bad response:", url, response.status);
@@ -687,17 +731,15 @@ async function tryTeamList(label, url, notes) {
   }
 }
 
-// Way 3: collect teams from recent and upcoming games instead
+// Way 3: collect teams from recent and upcoming games, day by day
 async function discoverFromGames(sport, notes) {
   var base = CONFIG.apiBase + leagueOf(sport) + "/scoreboard?groups=" + groupOf(sport) + "&limit=500&dates=";
   var today = new Date();
   var urls = [];
+  var from = sport === "football" ? -14 : -3;
+  var to = sport === "football" ? 14 : 10;
 
-  if (sport === "football") {
-    urls.push(base + apiDate(addDays(today, -21)) + "-" + apiDate(addDays(today, 21)));
-  } else {
-    for (var i = -3; i <= 10; i++) urls.push(base + apiDate(addDays(today, i)));
-  }
+  for (var i = from; i <= to; i++) urls.push(base + apiDate(addDays(today, i)));
 
   var results = await Promise.allSettled(urls.map(fetchJson));
   var raw = [];
@@ -738,6 +780,51 @@ async function loadTeams(sport, notes) {
   teams.sort(function (a, b) { return a.name.localeCompare(b.name); });
   if (teams.length > 0) teamsCache[sport] = teams;
   return teams;
+}
+
+// The built-in list, used when live team data can't be loaded
+function fallbackTeamList(sport) {
+  return CONFIG.fallbackTeams
+    .filter(function (t) { return !(sport === "football" && t.noFootball); })
+    .map(function (t) {
+      return {
+        id: "",
+        name: t.name,
+        fullName: t.name,
+        conf: t.conf,
+        color: "",
+        aliases: [t.name].concat(t.aliases || []),
+        fallback: true
+      };
+    })
+    .sort(function (a, b) { return a.name.localeCompare(b.name); });
+}
+
+// Does a live team match a built-in team?
+function sameTeam(liveTeam, builtIn) {
+  var names = [liveTeam.name, liveTeam.fullName].map(normalize);
+  return builtIn.aliases.some(function (alias) {
+    var a = normalize(alias);
+    return names.some(function (n) { return n === a || n.indexOf(a + " ") === 0; });
+  });
+}
+
+// A built-in team has no ID yet. Look it up from live data when needed.
+async function resolveTeam(team) {
+  if (team.id) return team;
+  if (team.resolved) return team.resolved;
+
+  var notes = [];
+  var list = await loadTeams(state.sport, notes);
+  var found = list.find(function (t) { return sameTeam(t, team); });
+
+  if (!found) throw new Error("live team data is not available right now");
+  team.resolved = found;
+  return found;
+}
+
+function teamKey(team) {
+  return team.id || "fb:" + normalize(team.name);
 }
 
 // One schedule game, from the viewpoint of the chosen team
@@ -1199,6 +1286,7 @@ function renderScores() {
 var tv = {
   detailTab: "schedule",
   teams: [],
+  usingFallback: false,     // true when showing the built-in team list
   notes: [],                // what happened while loading teams
   team: null,
   schedule: null,
@@ -1224,49 +1312,59 @@ async function openTeamList() {
 
   var request = ++tv.teamsRequest;
   var notes = [];
+  var teams = [];
 
   try {
-    tv.teams = await loadTeams(state.sport, notes);
+    teams = await loadTeams(state.sport, notes);
   } catch (error) {
     console.error(error);
     notes.push("Unexpected problem: " + error.message);
-    tv.teams = [];
   }
 
   if (request !== tv.teamsRequest) return;
+
+  // If live data didn't work, fall back to the built-in list
+  if (teams.length === 0) {
+    tv.teams = fallbackTeamList(state.sport);
+    tv.usingFallback = true;
+  } else {
+    tv.teams = teams;
+    tv.usingFallback = false;
+  }
+
   tv.notes = notes;
   renderTeams();
 }
 
 function renderTeamCard(team) {
   var color = /^[0-9a-f]{6}$/i.test(team.color) ? "#" + team.color : "#121212";
-  return '<button class="team-card" data-id="' + esc(team.id) + '" style="border-left-color: ' + color + '">' +
+  return '<button class="team-card" data-key="' + esc(teamKey(team)) + '" style="border-left-color: ' + color + '">' +
     '<span class="team-card-name">' + esc(team.name) + "</span>" +
     '<span class="team-card-conf">' + esc(team.conf) + "</span></button>";
 }
 
 // Draws a SWAC section and a MEAC section, one after the other
 function renderTeams() {
-  // Nothing found: explain what happened and offer a retry button
-  if (tv.teams.length === 0) {
-    $("teams-status").textContent = "";
+  var html = "";
 
-    var details = "";
-    if (tv.notes.length > 0) {
-      details = '<ul class="debug-list">' +
-        tv.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul>";
-    }
+  if (tv.usingFallback) {
+    var onGithub = location.hostname.indexOf("github.io") !== -1 && !PROXY_URL;
 
-    $("teams-sections").innerHTML =
-      '<div class="empty"><p><strong>No teams could be loaded right now.</strong></p>' +
-      '<p>Details of what was tried:</p>' + details +
-      '<button class="nav-btn retry-teams">Try again</button></div>';
-    return;
+    html += '<div class="empty fallback-note">' +
+      "<p><strong>Live team data couldn't be loaded, so this is the built-in team list.</strong></p>" +
+      "<p>Click a team and the site will try again to load its schedule and roster.</p>" +
+      (onGithub
+        ? "<p>This site is running on GitHub Pages without a data helper, so the browser may be blocking live data. See the setup steps for the data helper.</p>"
+        : "") +
+      '<button class="nav-btn retry-teams">Try again</button>' +
+      (tv.notes.length > 0
+        ? "<details><summary>What was tried</summary><ul class=\"debug-list\">" +
+          tv.notes.map(function (n) { return "<li>" + esc(n) + "</li>"; }).join("") + "</ul></details>"
+        : "") +
+      "</div>";
   }
 
   $("teams-status").textContent = tv.teams.length + " teams \u00B7 click a team for its schedule and roster";
-
-  var html = "";
 
   ["SWAC", "MEAC"].forEach(function (conf) {
     var list = tv.teams.filter(function (t) { return t.conf === conf; });
@@ -1323,7 +1421,10 @@ async function loadScheduleTab() {
   $("team-schedule-status").textContent = "Loading schedule\u2026";
 
   try {
-    var games = await loadSchedule(state.sport, team.id);
+    var ready = await resolveTeam(team);
+    if (request !== tv.scheduleRequest || tv.team !== team) return;
+
+    var games = await loadSchedule(state.sport, ready.id);
     if (request !== tv.scheduleRequest || tv.team !== team) return;
     tv.schedule = games;
   } catch (error) {
@@ -1387,7 +1488,10 @@ async function loadRosterTab() {
   $("roster-status").textContent = "Loading roster\u2026";
 
   try {
-    var players = await loadRoster(state.sport, team.id);
+    var ready = await resolveTeam(team);
+    if (request !== tv.rosterRequest || tv.team !== team) return;
+
+    var players = await loadRoster(state.sport, ready.id);
     if (request !== tv.rosterRequest || tv.team !== team) return;
     tv.roster = players;
   } catch (error) {
@@ -1869,7 +1973,7 @@ function bindEvents() {
     }
     var card = event.target.closest(".team-card");
     if (!card) return;
-    var team = tv.teams.find(function (t) { return t.id === card.dataset.id; });
+    var team = tv.teams.find(function (t) { return teamKey(t) === card.dataset.key; });
     if (team) openTeam(team);
   });
 

@@ -401,9 +401,9 @@ window.addEventListener("unhandledrejection", function (e) {
 
 /* ---------- 1. SETTINGS (edit these) ---------- */
 
-// If this site is hosted on GitHub Pages, live data usually needs a small
-// free "data helper". After you create it (see the setup steps), paste its
-// address between the quotes, like:  "https://hbcu-surge.yourname.workers.dev"
+// Your online data helper (a free Cloudflare Worker). If you named your
+// Worker something other than "hbcu-surge-data", change this address.
+// Leave it "" to skip the helper.
 var PROXY_URL = "https://hbcu-surge-data.elliotross04.workers.dev";
 
 // Which route the data takes:
@@ -449,8 +449,8 @@ var CONFIG = {
     "South Carolina State", "SC State"
   ],
 
-  // Built-in team list. The Teams page shows this when live team data
-  // can't be loaded. "noFootball" hides a school on the football tab.
+  // Built-in team list. Any team that live data doesn't return is added
+  // from here. "noFootball" hides a school on the football tab.
   // CHECK this against swac.org and meacsports.com too.
   fallbackTeams: [
     { name: "Alabama A&M", conf: "SWAC" },
@@ -791,7 +791,7 @@ async function loadTeams(sport, notes) {
   return teams;
 }
 
-// The built-in list, used when live team data can't be loaded
+// The built-in list, used for any team live data doesn't return
 function fallbackTeamList(sport) {
   return CONFIG.fallbackTeams
     .filter(function (t) { return !(sport === "football" && t.noFootball); })
@@ -1295,7 +1295,7 @@ function renderScores() {
 var tv = {
   detailTab: "schedule",
   teams: [],
-  usingFallback: false,     // true when showing the built-in team list
+  usingFallback: false,     // true when some teams come from the built-in list
   notes: [],                // what happened while loading teams
   team: null,
   schedule: null,
@@ -1363,14 +1363,14 @@ function renderTeamCard(team) {
 function renderTeams() {
   var html = "";
 
-  if (tv.usingFallback) {
+  if (false) {
     var onGithub = location.hostname.indexOf("github.io") !== -1 && !PROXY_URL;
 
     html += '<div class="empty fallback-note">' +
-           "<p><strong>Live data wasn't available for some teams, so they come from the built-in team list.</strong></p>" +
+      "<p><strong>Live data wasn't available for some teams, so they come from the built-in team list.</strong></p>" +
       "<p>Click a team and the site will try again to load its schedule and roster.</p>" +
       (onGithub
-        ? "<p>This site is running on GitHub Pages without a data helper, so the browser may be blocking live data. See the setup steps for the data helper.</p>"
+        ? "<p>This site is running on GitHub Pages without a data helper, so the browser may be blocking live data.</p>"
         : "") +
       '<button class="nav-btn retry-teams">Try again</button>' +
       (tv.notes.length > 0

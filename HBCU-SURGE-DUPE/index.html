@@ -731,15 +731,24 @@ async function tryTeamList(label, url, notes) {
   }
 }
 
-// Way 3: collect teams from recent and upcoming games, day by day
+// Way 3: collect teams from game scoreboards instead of a team list
 async function discoverFromGames(sport, notes) {
-  var base = CONFIG.apiBase + leagueOf(sport) + "/scoreboard?groups=" + groupOf(sport) + "&limit=500&dates=";
-  var today = new Date();
+  var base = CONFIG.apiBase + leagueOf(sport) + "/scoreboard?groups=" + groupOf(sport) + "&limit=500";
   var urls = [];
-  var from = sport === "football" ? -14 : -3;
-  var to = sport === "football" ? 14 : 10;
 
-  for (var i = from; i <= to; i++) urls.push(base + apiDate(addDays(today, i)));
+  // Football: one request per week of the season (weeks 1 to 14)
+  if (sport === "football") {
+    for (var w = 1; w <= 14; w++) {
+      urls.push(base + "&week=" + w + "&seasontype=2");
+    }
+  }
+
+  // Plus the days around today
+  var today = new Date();
+  var from = sport === "football" ? -10 : -3;
+  for (var i = from; i <= 10; i++) {
+    urls.push(base + "&dates=" + apiDate(addDays(today, i)));
+  }
 
   var results = await Promise.allSettled(urls.map(fetchJson));
   var raw = [];
@@ -756,7 +765,7 @@ async function discoverFromGames(sport, notes) {
   });
 
   var matched = pickConferenceTeams(raw);
-  notes.push("Teams from game schedules: " + worked + " of " + urls.length +
+  notes.push("Teams from game scoreboards: " + worked + " of " + urls.length +
              " requests worked, " + matched.length + " matched SWAC/MEAC.");
   return matched;
 }

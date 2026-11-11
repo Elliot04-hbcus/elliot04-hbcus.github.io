@@ -1367,7 +1367,7 @@ function renderTeams() {
     var onGithub = location.hostname.indexOf("github.io") !== -1 && !PROXY_URL;
 
     html += '<div class="empty fallback-note">' +
-      "<p><strong>Live team data couldn't be loaded, so this is the built-in team list.</strong></p>" +
+           "<p><strong>Live data wasn't available for some teams, so they come from the built-in team list.</strong></p>" +
       "<p>Click a team and the site will try again to load its schedule and roster.</p>" +
       (onGithub
         ? "<p>This site is running on GitHub Pages without a data helper, so the browser may be blocking live data. See the setup steps for the data helper.</p>"

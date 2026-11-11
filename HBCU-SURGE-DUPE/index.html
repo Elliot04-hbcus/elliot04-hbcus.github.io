@@ -1332,14 +1332,21 @@ async function openTeamList() {
 
   if (request !== tv.teamsRequest) return;
 
-  // If live data didn't work, fall back to the built-in list
-  if (teams.length === 0) {
-    tv.teams = fallbackTeamList(state.sport);
-    tv.usingFallback = true;
-  } else {
-    tv.teams = teams;
-    tv.usingFallback = false;
-  }
+  // Start with the teams found live, then add any built-in team that is missing
+  var combined = teams.slice();
+  var missing = 0;
+
+  fallbackTeamList(state.sport).forEach(function (builtIn) {
+    var found = teams.some(function (t) { return sameTeam(t, builtIn); });
+    if (!found) {
+      combined.push(builtIn);
+      missing++;
+    }
+  });
+
+  combined.sort(function (a, b) { return a.name.localeCompare(b.name); });
+  tv.teams = combined;
+  tv.usingFallback = missing > 0;
 
   tv.notes = notes;
   renderTeams();
